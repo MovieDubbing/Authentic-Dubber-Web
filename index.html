@@ -11,6 +11,11 @@
 	</head>
 	<body>
 		<div class="main">
+			
+			
+		
+
+
 
 			
 			<div class="title">
@@ -37,6 +42,37 @@
 			    z-index: 1;
 			  }
 			</style>
+			
+			<style>
+			  .toc a {
+			    color: rgb(29, 93, 164);
+			    text-decoration: none;
+			    font-weight: bold;
+			  }
+			  .toc a:hover {
+			    text-decoration: underline;
+			    cursor: pointer;
+			  }
+			  .toc li:hover {
+			    background-color: #eaf1fb;
+			    border-radius: 4px;
+			  }
+			</style>
+			
+			<div class="toc" style="margin: 100px 0; padding: 20px; background-color: #f8f8f8; border-bottom: 1px solid #ccc;">
+			  <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: rgb(29, 93, 164); font-weight: bold;">
+			    Table of Contents <span style="font-size: 1rem; font-weight: normal; color: #555;">(click to jump)</span>
+			  </h2>
+			  <ol style="padding-left: 20px; font-size: 1rem;">
+			    <li><a href="#abstract">1. Abstract</a></li>
+			    <li><a href="#model">2. Model Architecture</a></li>
+			    <li><a href="#comparison">3. Comparison with SOTA Dubbing Methods</a></li>
+			    <li><a href="#retrieval">4. Retrieval Result</a></li>
+			  </ol>
+			</div>
+
+
+
 
 
 
@@ -45,7 +81,8 @@
 				<div class="section author">
 				</div>
 				<div class="section">
-					<div class="section-title">ABSTRACT</div>
+					<div class="section-title" id="abstract">ABSTRACT</div>
+
 					<div class="section-content abstract">
 						The automatic movie dubbing model generates vivid speech
 						from given scripts, replicating a speaker’s timbre from a
@@ -73,7 +110,8 @@
 				</div>
 				
 				<div class="section">
-				  <div class="section-title">MODEL ARCHITECTURE</div>
+				  <div class="section-title" id="model">MODEL ARCHITECTURE</div>
+
 				  <div class="section-content model">
 				    <img src="./img/model.png" alt="" class="model-img" style="display: block; margin: 0 auto; max-width: 65%;">
 				    
@@ -86,7 +124,8 @@
 
 				
 				<div class="section">
-					<div class="section-title">Comparison with SOTA Dubbing Methods</div>
+					<div class="section-title" id="comparison">Comparison with SOTA Dubbing Methods</div>
+
 					<div class="section-content experiments">
 						<!-- We develop four neural TTS systems for a  -->
 						<strong>Baselines:</strong>
@@ -301,7 +340,8 @@
 					</div>
 				</div>
 			<div class="section">
-			  <div class="section-title">Retrieval Result</div>
+			  <div class="section-title" id="retrieval">Retrieval Result</div>
+
 			  <div class="section-content model">
 			    <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 1rem; color: #333;">
 			      <thead style="background-color: #f2f2f2;">
