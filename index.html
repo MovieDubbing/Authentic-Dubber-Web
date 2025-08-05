@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Towards Authentic Movie Dubbing with Retrieve-Augmented Director-Actor Interaction Learning</title>
+		<link type="text/css" href="./css/basic.css" rel="stylesheet">
+		<link type="text/css" href="./css/index.css" rel="stylesheet">
+		<link type="text/css" href="./css/bootstrap.min.css" rel="stylesheet">
+		<script type='text/javascript' src="./js/jquery-3.3.1.min.js"></script>
+		<script type='text/javascript' src="./js/index.js"></script>
+	</head>
+	<body>
+		<div class="main">
+			<div class="title">
+				<img class="top-img"  src="img/background.png" />
+				<span>Towards Authentic Movie Dubbing with Retrieve-Augmented Director-Actor Interaction Learning</span>
+			</div>
+			<div class="content">
+				<div class="section author">
+				</div>
+				<div class="section">
+					<div class="section-title">ABSTRACT</div>
+					<div class="section-content abstract">
+						The automatic movie dubbing model generates vivid speech
+						from given scripts, replicating a speaker’s timbre from a
+						brief timbre prompt while ensuring lip-sync with the silent
+						video. Existing approaches simulate a simplified workflow
+						where actors dub directly without preparation, overlooking
+						the critical director–actor interaction. In contrast, authentic workflows involve a dynamic collaboration: directors actively engage with actors, guiding them to internalize the
+						context cues, specifically emotion, before performance. To
+						address this issue, we propose a new Retrieve-Augmented
+						Director-Actor Interaction Learning scheme to achieve authentic movie dubbing, termed Authentic-Dubber, which
+						contains three novel mechanisms: (1) We construct a multimodal Reference Footage library to simulate the learning
+						footage provided by directors. Note that we integrate Large
+						Language Models (LLMs) to achieve deep comprehension
+						of emotional representations across multimodal signals. (2)
+						To emulate how actors efficiently and comprehensively internalize director-provided footage during dubbing, we propose
+						an Emotion-Similarity-based Retrieval-Augmentation strategy. This strategy retrieves the most relevant multimodal information that aligns with the target silent video. (3) We
+						develop a Progressive Graph-based speech generation approach that incrementally incorporates the retrieved multimodal emotional knowledge, thereby simulating the actor’s
+						final dubbing process. The above mechanisms enable the
+						Authentic-Dubber to faithfully replicate the authentic dubbing workflow, achieving comprehensive improvements in
+						emotional expressiveness. Both subjective and objective evaluations on the V2C-Animation benchmark dataset validate
+						the effectiveness. The source code and model checkpoints
+						will be released to the public. The demos are available at
+						 <a href="https://github.com/MovieDubbing/Authentic-Dubber."><span  style="color: #1d5da4; ">https://github.com/MovieDubbing/Authentic-Dubber</span></a>.
+					</div>
+				</div>
+				
+				<div class="section">
+				  <div class="section-title">MODEL ARCHITECTURE</div>
+				  <div class="section-content model">
+				    <img src="./img/model.png" alt="" class="model-img" style="display: block; margin: 0 auto; max-width: 65%;">
+				    
+				    <p style="padding-top: 1rem; color: #a1a1a1; font-size: 1rem; text-align: center;">
+				      Figure: The proposed Authentic-Dubber consists of Multimodal Reference Footage Construction, Emotion-Similarity-based Retrieval-Augmentation, and Progressive Graph-based Speech Generation. <br>
+					  (* means that the node’s initial vector representation is initialized from the immediately preceding graph.)
+				    </p>
+				  </div>
+				</div>
+
+				
+				<div class="section">
+					<div class="section-title">Comparison with SOTA Dubbing Methods</div>
+					<div class="section-content experiments">
+						<!-- We develop four neural TTS systems for a  -->
+						<strong>Baselines:</strong>
+						</br> 1) <b>FastSpeech2* (ICLR 2021)</b>: A neural text-to-speech model that incorporates video embeddings as additional input.
+						</br> 2) <b>V2C-Net (CVPR 2022)</b>: Leverages a pre-trained emotion model I3D to extract and model emotional information from visual signals.
+						</br> 3) <b>HPMDubbing (CVPR 2023)</b>: Performs hierarchical speech modeling by jointly utilizing a facial emotion model EmoFan (capture valence and arousal from facial expressions) and the I3D model (extract scene emotional information).
+						</br> 4) <b>StyleDubber (ACL 2024)</b>: Employs an Emotion Reference Transformer to model facial emotional changes at the phoneme level.
+						</br> 5) <b>Speaker2Dubber (MM 2024)</b>: Utilizes cross-modal attention to bridge facial emotional features with the prosodic attributes of each phoneme.
+						</br><i><span style="color:#d9534f; font-weight:bold; font-size: 20px;">Note:</span> <span style="font-size: 16px;">To ensure a fair comparison, our model and all baselines adopt FastSpeech2 as the speech synthesis backbone and are trained solely on the V2C dataset, which contains background noise. This choice somewhat limits the acoustic quality of the synthesized speech but does not affect the effectiveness of our model in enhancing emotional expressiveness in dubbing.</span></i>
+
+
+
+
+					</div>
+					<div class="section-content ">
+						<hr />
+						<div class="subsection-exp-2">
+							
+							<div>
+								
+							</div>
+							
+
+							<div class="module-content" style="margin-bottom: 30px;">
+
+								
+								<table>
+								  <thead>
+								    <colgroup>
+								      <col width="20%"><col width="20%"><col width="20%">
+								      <col width="20%"><col width="20%"><col width="20%"><col width="20%">
+								    </colgroup>
+								    <tr>
+								      <td colspan="7" style="text-align: center;">
+								        <span style="font-weight: bold; font-size: 1.2em;">Sample 1 (Full Video)</span>
+								      </td>
+								    </tr>
+								    <tr>
+								      <th style="text-align: center;"><strong>Ground-Truth</strong></th>
+								      <th style="text-align: center;"><strong>FastSpeech2*</strong></th>
+								      <th style="text-align: center;"><strong>V2C-Net</strong></th>
+								      <th style="text-align: center;"><strong>HPMDubbing</strong></th>
+								      <th style="text-align: center;"><strong>StyleDubber</strong></th>
+								      <th style="text-align: center;"><strong>Speaker2Dubber</strong></th>
+								      <th style="text-align: center; color: #1d5da4;"><strong>Authentic-Dubber</strong></th>
+								    </tr>
+
+								      <td colspan="7" style="text-align: center;">
+								        <span ">Script </span> : I am so sorry.
+								      </td>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr>
+								      <td><video src="./video/TinkerIII@Alejandra_00_0517_00_gt.mp4" controls width="215"></video></td>
+								      <td><video src="./video/TinkerIII@Alejandra_00_0517_00_fs2.mp4" controls width="215"></video></td>
+								      <td><video src="./video/TinkerIII@Alejandra_00_0517_00_v2c.mp4" controls width="215"></video></td>
+								      <td><video src="./video/TinkerIII@Alejandra_00_0517_00_hpmd.mp4" controls width="215"></video></td>
+								      <td><video src="./video/TinkerIII@Alejandra_00_0517_00_style_dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/TinkerIII@Alejandra_00_0517_00_speaker2dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/TinkerIII@Alejandra_00_0517_00_our.mp4" controls width="215"></video></td>
+								    </tr>
+								  </tbody>
+								</table>
+
+								
+								<table>
+								  <thead>
+								    <colgroup>
+								      <col width="20%"><col width="20%"><col width="20%">
+								      <col width="20%"><col width="20%"><col width="20%"><col width="20%">
+								    </colgroup>
+								    <tr>
+								      <td colspan="7" style="text-align: center;">
+								        <span style="font-weight: bold; font-size: 1.2em;">Sample2 (Full Video)</span>
+								      </td>
+								    </tr>
+								    <tr>
+								      <th style="text-align: center;"><strong>Ground-Truth</strong></th>
+								      <th style="text-align: center;"><strong>FastSpeech2*</strong></th>
+								      <th style="text-align: center;"><strong>V2C-Net</strong></th>
+								      <th style="text-align: center;"><strong>HPMDubbing</strong></th>
+								      <th style="text-align: center;"><strong>StyleDubber</strong></th>
+								      <th style="text-align: center;"><strong>Speaker2Dubber</strong></th>
+								      <th style="text-align: center; color: #1d5da4;"><strong>Authentic-Dubber</strong></th>
+								    </tr>
+
+								    <tr>
+								      <td colspan="7" style="text-align: center;">
+								        <span ">Script:</span> Great! now you can go!
+								      </td>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr>
+								      <td><video src="./video/ToyII@Jessie_00_0588_00_gt.mp4" controls width="215"></video></td>
+								      <td><video src="./video/ToyII@Jessie_00_0588_00_fs2.mp4" controls width="215"></video></td>
+								      <td><video src="./video/ToyII@Jessie_00_0588_00_v2c.mp4" controls width="215"></video></td>
+								      <td><video src="./video/ToyII@Jessie_00_0588_00_hpmd.mp4" controls width="215"></video></td>
+								      <td><video src="./video/ToyII@Jessie_00_0588_00_style_dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/ToyII@Jessie_00_0588_00_speaker2dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/ToyII@Jessie_00_0588_00_our.mp4" controls width="215"></video></td>
+								    </tr>
+								  </tbody>
+								</table>
+
+
+								
+
+								
+								<table>
+								  <thead>
+								    <colgroup>
+								      <col width="20%"><col width="20%"><col width="20%">
+								      <col width="20%"><col width="20%"><col width="20%"><col width="20%">
+								    </colgroup>
+								    <tr>
+								      <td colspan="7" style="text-align: center;">
+								        <span style="font-weight: bold; font-size: 1.2em;">Sample 3 (Full Video)</span>
+								      </td>
+								    </tr>
+								    <tr>
+								      <th style="text-align: center;"><strong>Ground-Truth</strong></th>
+								      <th style="text-align: center;"><strong>FastSpeech2*</strong></th>
+								      <th style="text-align: center;"><strong>V2C-Net</strong></th>
+								      <th style="text-align: center;"><strong>HPMDubbing</strong></th>
+								      <th style="text-align: center;"><strong>StyleDubber</strong></th>
+								      <th style="text-align: center;"><strong>Speaker2Dubber</strong></th>
+								      <th style="text-align: center; color: #1d5da4;"><strong>Authentic-Dubber</strong></th>
+								    </tr>
+
+								    <tr>
+								      <td colspan="7" style="text-align: center;">
+								        <span ">Script:</span>  Excuse me.
+								      </td>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr>
+								      <td><video src="./video/FrozenII@Elsa_00_0139_00_gt.mp4" controls width="215"></video></td>
+								      <td><video src="./video/FrozenII@Elsa_00_0139_00_fs2.mp4" controls width="215"></video></td>
+								      <td><video src="./video/FrozenII@Elsa_00_0139_00_v2c.mp4" controls width="215"></video></td>
+								      <td><video src="./video/FrozenII@Elsa_00_0139_00_hpmd.mp4" controls width="215"></video></td>
+								      <td><video src="./video/FrozenII@Elsa_00_0139_00_style_dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/FrozenII@Elsa_00_0139_00_speaker2dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/FrozenII@Elsa_00_0139_00_our.mp4" controls width="215"></video></td>
+								    </tr>
+								  </tbody>
+								</table>
+
+								
+								<table>
+								  <thead>
+								    <colgroup>
+								      <col width="20%"><col width="20%"><col width="20%">
+								      <col width="20%"><col width="20%"><col width="20%"><col width="20%">
+								    </colgroup>
+								    <tr>
+								      <td colspan="7" style="text-align: center;">
+								        <span style="font-weight: bold; font-size: 1.2em;">Sample4 (Full Video)</span>
+								      </td>
+								    </tr>
+								    <tr>
+								      <th style="text-align: center;"><strong>Ground-Truth</strong></th>
+								      <th style="text-align: center;"><strong>FastSpeech2*</strong></th>
+								      <th style="text-align: center;"><strong>V2C-Net</strong></th>
+								      <th style="text-align: center;"><strong>HPMDubbing</strong></th>
+								      <th style="text-align: center;"><strong>StyleDubber</strong></th>
+								      <th style="text-align: center;"><strong>Speaker2Dubber</strong></th>
+								      <th style="text-align: center; color: #1d5da4;"><strong>Authentic-Dubber</strong></th>
+								    </tr>
+
+								    <tr>
+								      <td colspan="7" style="text-align: center;">
+								        <span ">Script: </span>   I'm so sorry i broke it, ralph.
+								      </td>
+								    </tr>
+								  </thead>
+								  <tbody>
+								    <tr>
+								      <td><video src="./video/Ralph@Vanellope_00_1759_00_gt.mp4" controls width="215"></video></td>
+								      <td><video src="./video/Ralph@Vanellope_00_1759_00_fs2.mp4" controls width="215"></video></td>
+								      <td><video src="./video/Ralph@Vanellope_00_1759_00_v2c.mp4" controls width="215"></video></td>
+								      <td><video src="./video/Ralph@Vanellope_00_1759_00_hpmd.mp4" controls width="215"></video></td>
+								      <td><video src="./video/Ralph@Vanellope_00_1759_00_style_dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/Ralph@Vanellope_00_1759_00_speaker2dubber.mp4" controls width="215"></video></td>
+								      <td><video src="./video/Ralph@Vanellope_00_1759_00_our.mp4" controls width="215"></video></td>
+								    </tr>
+								  </tbody>
+								</table>
+
+
+
+
+
+
+
+				
+
+								
+
+							
+								
+							</div>
+							
+							
+
+							
+						</div>
+						<hr />
+					
+					</div>
+				</div>
+			<div class="section">
+			  <div class="section-title">Retrieval Result</div>
+			  <div class="section-content model">
+			    <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 1rem; color: #333;">
+			      <thead style="background-color: #f2f2f2;">
+			        <tr>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #1 to be Dubbed</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+			        </tr>
+
+			      </thead>
+			      <tbody>
+			        
+					
+					  <tr>
+					    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(230, 195, 150);">
+					      Scene Retrieval
+					    </td>
+					  </tr>
+					  <tr>
+					    <td><video src="./retrieval_result/video_path/FrozenII@Anna_00_0159_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/Meet@Lewis_00_0017_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/TinkerIII@LizzyGriffiths_00_0273_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/TinkerII@Terence_00_0198_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/TinkerIII@LizzyGriffiths_00_0258_00.mp4" controls width="215"></video></td>
+					  
+					  </tr>
+					
+			        <tr>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a warm and friendly atmosphere, with the girl's smile and the playful interaction between her and Olaf. The red and white checkered blanket adds to the cozy and inviting ambiance of the scene.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a playful and whimsical atmosphere, with the boy's spiky hair and glasses adding to his quirky personality. The blue and white striped wallpaper and the wooden chair in the background create a cozy and nostalgic ambiance. The overall emotional tone of the scene is light-hearted and fun, with a touch of nostalgia.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a warm and inviting atmosphere, with the girl's smile and the cozy room setting. The green and blue hues of the artwork add a touch of playfulness and creativity to the scene. Overall, it feels like a heartwarming moment between the boy and the girl, as he admires her artwork.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a light-hearted and playful atmosphere. The characters are engaged in a friendly interaction, with the boy holding a toy and the girl looking at something in her hand. The overall color palette is muted, which adds to the whimsical and dreamlike quality of the scene.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a sense of nostalgia and whimsy, with the girl's white dress and the colorful drawings on the wall. The light green color of the wall adds to the overall calm and peaceful atmosphere. The presence of the small figurines on the table also adds a playful touch to the scene.
+			          </td>
+			        </tr>
+					
+					
+
+			      </tbody>
+				  
+				  <tr>
+				    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+
+				    </td>
+				  </tr>
+				  
+				
+				<thead style="background-color: #f2f2f2;">
+				  <tr>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #1 to be Dubbed</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+				  </tr>
+				
+				</thead>
+				<tbody>
+				  
+									
+									  <tr>
+									    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(186, 232, 186);">
+									      Face Retrieval
+									    </td>
+									  </tr>
+									  <tr>
+									    <td><video src="./retrieval_result/video_path/FrozenII@Anna_00_0159_00.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/DragonII_converted.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/Cloudy@Mayor_00_0887_00.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/Inside@Joy_00_1063_00.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/Moana@Maul_00_0529_00.mp4" controls width="215"></video></td>
+									  
+									  </tr>
+									
+				  <tr>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The girl's expression starts off calm, then she smiles and appears very happy. As she looks at the snowman, her smile widens, becoming even more joyful.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression starts with a smile, then becomes more animated and excited as she continues to speak. Her eyes widen and her mouth opens slightly as she makes a funny face. Finally, she has a big smile on her face and looks happy and satisfied with herself.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character starts off with a smile, then becomes more excited as he points at the crowd. He continues to be happy and enthusiastic throughout the video.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression starts with a smile, then becomes more intense as she laughs louder. Her mouth opens wider and her eyes squint in delight. Finally, she ends the conversation with a big smile and a contented look on her face.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character starts off with a happy expression, then becomes more animated and excited. Finally, he ends the conversation with a smile on his face.
+				    </td>
+				  </tr>
+
+									
+									
+				
+				</tbody>
+				
+				<tr>
+				  <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+				
+				  </td>
+				</tr>
+				
+
+				<thead style="background-color: #f2f2f2;">
+				  <tr>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #1 to be Dubbed</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+				  </tr>
+				
+				</thead>
+
+				<tbody>	
+				  
+									
+									  <tr>
+									    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(177, 221, 240);">
+									      Text Retrieval
+									    </td>
+									  </tr>
+									  <tr>
+									    <td><video src="./retrieval_result/video_path/FrozenII@Anna_00_0159_00.mp4" controls width="215"></video> 
+										
+										</td>
+										<td><video src="./retrieval_result/video_path/DragonII@Eret_00_0675_00.mp4" controls width="215"></video> 
+					
+										</td>
+										<td><video src="./retrieval_result/video_path/Bossbaby@BossBaby_00_1255_00.mp4" controls width="215"></video> 
+										
+										</td>
+										<td><video src="./retrieval_result/video_path/Up@Russell_00_0763_00.mp4" controls width="215"></video> 
+										
+										</td>
+										<td><video src="./retrieval_result/video_path/FrozenII@Elsa_00_0842_00.mp4" controls width="215"></video> 
+										
+										</td>
+
+									  
+									  </tr>
+									
+				  <tr>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I don't worry because. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm fine.
+				    </td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I wouldn't worry about it. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm fine.
+					</td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> Don't worry, tim. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm fine.
+					</td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> Don't worry, kevin. i'll save. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'll be fine.
+					</td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I don't want to put anyone at risk again. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm not going to do it again.
+					</td>
+				    
+				  </tr>
+
+									
+									
+				
+				</tbody>
+				
+				<tr>
+				  <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+				
+				  </td>
+				</tr>
+				
+				<thead style="background-color: #f2f2f2;">
+				    <tr>
+				      <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #2 to be Dubbed</th>
+				      <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+				      <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+				      <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+				      <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+				    </tr>
+				
+				  </thead>
+				  <tbody>
+				    
+					
+					  <tr>
+					    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(230, 195, 150);">
+					      Scene Retrieval
+					    </td>
+					  </tr>
+					  <tr>
+					    <td><video src="./retrieval_result/video_path/TinkerII@TinkerBell_00_0633_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/FrozenII@Elsa_00_1005_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/Incredibles@Helen_00_0727_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/TinkerII@TinkerBell_00_0637_00.mp4" controls width="215"></video></td>
+					    <td><video src="./retrieval_result/video_path/FrozenII@Anna_00_1243_00.mp4" controls width="215"></video></td>
+					  
+					  </tr>
+					
+				    <tr>
+				      <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				        <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a somber and melancholic atmosphere. The girl's expression is sad, and the overall color palette of the scene is muted and subdued, further emphasizing the emotional weight of the moment.
+				      </td>
+				      <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				        <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a somber and melancholic atmosphere. The girl's expression is one of sadness, and the overall color palette of the scene is muted and dark, further emphasizing the emotional tone.
+				      </td>
+				      <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				        <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a somber and melancholic atmosphere, with the woman's tears and sobs indicating sadness or distress. The muted colors and dim lighting further emphasize the emotional weight of the moment.
+				      </td>
+				      <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				        <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a somber and melancholic atmosphere. The girl's tears falling onto the mirror reflect her sadness, while the dark and muted colors further emphasize the emotional weight of the moment.
+				      </td>
+				      <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				        <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a somber and melancholic atmosphere. The girl's face is hidden behind her hand, suggesting a sense of sadness or introspection. The dark and muted colors further emphasize the emotional weight of the moment.
+				      </td>
+				    </tr>
+					
+					
+				
+				  </tbody>
+				  
+				  <tr>
+				    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+				
+				    </td>
+				  </tr>
+				  
+				
+				<thead style="background-color: #f2f2f2;">
+				  <tr>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #2 to be Dubbed</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+				  </tr>
+				
+				</thead>
+				<tbody>
+				  
+									
+									  <tr>
+									    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(186, 232, 186);">
+									      Face Retrieval
+									    </td>
+									  </tr>
+									  <tr>
+									    <td><video src="./retrieval_result/video_path/TinkerII@TinkerBell_00_0633_00.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/Moana@Moana_00_1030_00.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/Inside@Sadness_00_1330_00.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/FrozenII@Anna_00_1261_00.mp4" controls width="215"></video></td>
+									    <td><video src="./retrieval_result/video_path/FrozenII@Anna_00_1256_00.mp4" controls width="215"></video></td>
+									  
+									  </tr>
+									
+				  <tr>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression starts with a neutral look, then changes to a sad expression as she looks down. The expression remains the same for the duration of the video.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression starts with a neutral look, then shifts to a sad expression as she looks at the ocean. The expression remains the same for the duration of the video.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression starts with a neutral look, then changes to a sad expression as she looks at the other person. The character's eyes widen and their mouth opens slightly in sadness. Finally, the character's expression remains sad as they continue to look at the other person.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression is a mix of sadness and resignation. Her eyes are closed, and her lips are slightly parted as if she is holding back tears. The expression on her face remains consistent throughout the video.
+				    </td>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+				      <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression starts with a neutral look, then changes to a sad expression as she begins to cry. Her eyes are closed and her mouth is slightly open as she continues to cry. The video ends with the character still crying and looking down.
+				    </td>
+				  </tr>
+				
+									
+									
+				
+				</tbody>
+				
+				<tr>
+				  <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+				
+				  </td>
+				</tr>
+				
+				
+				<thead style="background-color: #f2f2f2;">
+				  <tr>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #2 to be Dubbed</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+				    <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+				  </tr>
+				
+				</thead>
+				
+				<tbody>	
+				  
+									
+									  <tr>
+									    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(177, 221, 240);">
+									      Text Retrieval
+									    </td>
+									  </tr>
+									  <tr>
+									    <td><video src="./retrieval_result/video_path/TinkerII@TinkerBell_00_0633_00.mp4" controls width="215"></video> 
+										
+										</td>
+										<td><video src="./retrieval_result/video_path/ToyII@Sheriff_00_0045_00.mp4" controls width="215"></video> 
+					
+										</td>
+										<td><video src="./retrieval_result/video_path/DragonII@Hiccup_00_0976_00.mp4" controls width="215"></video> 
+										
+										</td>
+										<td><video src="./retrieval_result/video_path/DragonII@valka_00_0617_00.mp4" controls width="215"></video> 
+										
+										</td>
+										<td><video src="./retrieval_result/video_path/Ralph@Vanellope_00_1759_00.mp4" controls width="215"></video> 
+										
+										</td>
+				
+									  
+									  </tr>
+									
+				  <tr>
+				    <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I'm sorry, blaze. it's not your fault.. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm sorry.
+				    </td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I'm sorry, bo. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm sorry too.
+					</td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I'm sorry, dad. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm sorry too.
+					</td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I'm so sorry, hiccup. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm sorry too.
+					</td>
+					<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+					  <span style="color: rgb(177, 221, 240);">Target Script :</span> I'm so sorry i broke it, ralph. <br>
+					  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> I'm sorry too.
+					</td>
+				    
+				  </tr>
+				
+									
+									
+				
+				</tbody>
+				
+				<tr>
+				  <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+				
+				  </td>
+				</tr>
+			
+			    <thead style="background-color: #f2f2f2;">
+			        <tr>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #3 to be Dubbed</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+			          <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+			        </tr>
+			    
+			      </thead>
+			      <tbody>
+			        
+			    	
+			    	  <tr>
+			    	    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(230, 195, 150);">
+			    	      Scene Retrieval
+			    	    </td>
+			    	  </tr>
+			    	  <tr>
+			    	    <td><video src="./retrieval_result/video_path/Frozen@Duke_00_0494_00.mp4" controls width="215"></video></td>
+			    	    <td><video src="./retrieval_result/video_path/Incredibles@Mirage_00_0946_00.mp4" controls width="215"></video></td>
+			    	    <td><video src="./retrieval_result/video_path/ToyII@Sheriff_00_0439_00.mp4" controls width="215"></video></td>
+			    	    <td><video src="./retrieval_result/video_path/IncrediblesII@Helen_00_1428_00.mp4" controls width="215"></video></td>
+			    	    <td><video src="./retrieval_result/video_path/Brave@LordDingwall_00_0288_00.mp4" controls width="215"></video></td>
+			    	  
+			    	  </tr>
+			    	
+			        <tr>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a tense and serious atmosphere, with the characters' expressions and body language suggesting that they are engaged in a high-stakes situation. The muted color palette further contribute to this sense of tension and urgency.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a tense and dramatic atmosphere. The characters' expressions, body language, and the overall setting suggest that something significant is about to happen or has just happened. The dark background and the characters' intense gazes further emphasize the gravity of the situation.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a tense and serious atmosphere, with the cowboy character looking at the horse with a concerned expression. The dark lighting and muted colors further emphasize the gravity of the situation.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a tense and serious atmosphere. The characters are engaged in a conversation, with the woman wearing a black mask and the man wearing a black shirt. The lighting is dim, which adds to the intensity of the scene.
+			          </td>
+			          <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			            <span style="color: rgb(230, 195, 150);">Scene Caption:</span> The scene conveys a tense and serious atmosphere, with the characters' expressions and body language suggesting that they are engaged in a high-stakes situation. The muted color palette further contribute to this sense of tension and urgency.
+			          </td>
+			        </tr>
+			    	
+			    	
+			    
+			      </tbody>
+			      
+			      <tr>
+			        <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+			    
+			        </td>
+			      </tr>
+			      
+			    
+			    <thead style="background-color: #f2f2f2;">
+			      <tr>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #3 to be Dubbed</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+			      </tr>
+			    
+			    </thead>
+			    <tbody>
+			      
+			    					
+			    					  <tr>
+			    					    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(186, 232, 186);">
+			    					      Face Retrieval
+			    					    </td>
+			    					  </tr>
+			    					  <tr>
+			    					    <td><video src="./retrieval_result/video_path/Frozen@Duke_00_0494_00.mp4" controls width="215"></video></td>
+			    					    <td><video src="./retrieval_result/video_path/Bossbaby@Francis_00_1040_00.mp4" controls width="215"></video></td>
+			    					    <td><video src="./retrieval_result/video_path/CloudyII@Earl_00_0401_00.mp4" controls width="215"></video></td>
+			    					    <td><video src="./retrieval_result/video_path/IncrediblesII@Bob_00_1607_00.mp4" controls width="215"></video></td>
+			    					    <td><video src="./retrieval_result/video_path/Dragon@StoicktheVast_00_0746_00.mp4" controls width="215"></video></td>
+			    					  
+			    					  </tr>
+			    					
+			      <tr>
+			        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			          <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character starts off with a neutral expression, then his expression changes to a frown as he speaks. He then looks very angry with his eyes glaring.
+			        </td>
+			        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			          <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character starts off with a neutral expression, then becomes angry. He then continues to speak with an angry expression on his face.
+			        </td>
+			        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			          <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character starts off with a neutral expression, then becomes angry and shouts. He looks very angry with his eyes glaring.
+			        </td>
+			        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			          <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character's facial expression changes from neutral to angry as he speaks on the phone. His eyebrows raise, his eyes narrow, and his lips purse in a tight line. He maintains this angry expression throughout the conversation.
+			        </td>
+			        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			          <span style="color: rgb(186, 232, 186);">Face Caption:</span> The character starts off with a neutral expression, then becomes angry as he speaks. His mouth opens wider and his eyes narrow during this transition. Finally, he finishes speaking with an intense look on his face.
+			        </td>
+			      </tr>
+			    
+			    					
+			    					
+			    
+			    </tbody>
+			    
+			    <tr>
+			      <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+			    
+			      </td>
+			    </tr>
+			    
+			    
+			    <thead style="background-color: #f2f2f2;">
+			      <tr>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Utterance #3 to be Dubbed</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 1</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 2</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 9</th>
+			        <th style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">Top 10</th>
+			      </tr>
+			    
+			    </thead>
+			    
+			    <tbody>	
+			      
+			    					
+			    					  <tr>
+			    					    <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold; background-color: #f9f9f9; color: rgb(177, 221, 240);">
+			    					      Text Retrieval
+			    					    </td>
+			    					  </tr>
+			    					  <tr>
+			    					    <td><video src="./retrieval_result/video_path/Frozen@Duke_00_0494_00.mp4" controls width="215"></video> 
+			    						
+			    						</td>
+			    						<td><video src="./retrieval_result/video_path/DragonII@Drago_00_1071_00.mp4" controls width="215"></video> 
+			    	
+			    						</td>
+			    						<td><video src="./retrieval_result/video_path/DragonII@Drago_00_0699_00.mp4" controls width="215"></video> 
+			    						
+			    						</td>
+			    						<td><video src="./retrieval_result/video_path/Wreck@KingCandy_00_0941_00.mp4" controls width="215"></video> 
+			    						
+			    						</td>
+			    						<td><video src="./retrieval_result/video_path/Incredibles@Helen_00_0883_00.mp4" controls width="215"></video> 
+			    						
+			    						</td>
+			    
+			    					  
+			    					  </tr>
+			    					
+			      <tr>
+			        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			    	  <span style="color: rgb(177, 221, 240);">Target Script :</span> She must be stopped! you have to go after her. <br>
+			    	  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> X gets angry.
+			        </td>
+			    	<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			    	  <span style="color: rgb(177, 221, 240);">Target Script :</span> Stop them! <br>
+			    	  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> X gets angry.
+			    	</td>
+			    	<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			    	  <span style="color: rgb(177, 221, 240);">Target Script :</span> we must attack the dragon riders' nest at once! <br>
+			    	  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> X gets angry.
+			    	</td>
+			    	<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			    	  <span style="color: rgb(177, 221, 240);">Target Script :</span> Find that glitch! destroy that cart! <br>
+			    	  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> X gets angry.
+			    	</td>
+			    	<td style="padding: 0.5rem; border: 1px solid #ddd; text-align: left; vertical-align: top;">
+			    	  <span style="color: rgb(177, 221, 240);">Target Script :</span> Do not give them that chance. <br>
+			    	  <span style="color: rgb(177, 221, 240);">Reaction Caption :</span> X gets angry.
+			    	</td>
+			        
+			      </tr>
+			    
+			    					
+			    					
+			    
+			    </tbody>
+			    
+			    <tr>
+			      <td colspan="5" style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; color: #ccc;">
+			    
+			      </td>
+			    </tr>
+				  
+				  
+				  
+			    </table>
+			  </div>
+			</div>
+
+			</div>
+			</div>
+		</div>
+		
+		
+	</body>
+</html>
