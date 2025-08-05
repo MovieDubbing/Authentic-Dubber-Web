@@ -11,10 +11,36 @@
 	</head>
 	<body>
 		<div class="main">
+
+			
 			<div class="title">
-				<img class="top-img"  src="img/background.png" />
-				<span>Towards Authentic Movie Dubbing with Retrieve-Augmented Director-Actor Interaction Learning</span>
+			  <img class="top-img" src="img/background_v4.png" alt="" />
 			</div>
+			
+			<style>
+			  .title {
+			    width: 100%;
+			    overflow: visible;
+			    position: relative;
+			    margin-bottom: 500px; 
+				margin-top: 400px;
+			  }
+			
+			  .top-img {
+			    width: 100%;
+			    height: auto;
+			    display: block;
+			  }
+			
+			  .content {
+			    position: relative;
+			    z-index: 1;
+			  }
+			</style>
+
+
+
+
 			<div class="content">
 				<div class="section author">
 				</div>
@@ -66,7 +92,7 @@
 						<strong>Baselines:</strong>
 						</br> 1) <b>FastSpeech2* (ICLR 2021)</b>: A neural text-to-speech model that incorporates video embeddings as additional input.
 						</br> 2) <b>V2C-Net (CVPR 2022)</b>: Leverages a pre-trained emotion model I3D to extract and model emotional information from visual signals.
-						</br> 3) <b>HPMDubbing (CVPR 2023)</b>: Performs hierarchical speech modeling by jointly utilizing a facial emotion model EmoFan (capture valence and arousal from facial expressions) and the I3D model (extract scene emotional information).
+						</br> 3) <b>HPMDubbing (CVPR 2023)</b>: Performs hierarchical speech modeling by jointly utilizing a facial emotion model EmoFan (capture valence and arousal from facial expressions) and the emotion I3D model (extract scene emotional information).
 						</br> 4) <b>StyleDubber (ACL 2024)</b>: Employs an Emotion Reference Transformer to model facial emotional changes at the phoneme level.
 						</br> 5) <b>Speaker2Dubber (MM 2024)</b>: Utilizes cross-modal attention to bridge facial emotional features with the prosodic attributes of each phoneme.
 						</br><i><span style="color:#d9534f; font-weight:bold; font-size: 20px;">Note:</span> <span style="font-size: 16px;">To ensure a fair comparison, our model and all baselines adopt FastSpeech2 as the speech synthesis backbone and are trained solely on the V2C dataset, which contains background noise. This choice somewhat limits the acoustic quality of the synthesized speech but does not affect the effectiveness of our model in enhancing emotional expressiveness in dubbing.</span></i>
